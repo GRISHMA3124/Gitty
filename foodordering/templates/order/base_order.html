@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="/site_media/base_order.css" />
+    <title>{% block title %}Order{% endblock %}</title>
+</head>
+
+<body>
+<h1>Order</h1>
+<div id="recipt">
+    {% block recipt %}
+	<div id="customer">
+	    <h2>Customer</h2>
+	    {% if customer %}
+		{{ customer.name }} <br />
+		{{ customer.number }} <br />
+	    {% endif %}
+	    <form action="#" method="POST">{% csrf_token %}
+		{{ customer_form.as_p }}
+		<input type="submit" name="customer" value="Update">
+	    </form>
+	</div>
+	<h2>Your Order</h2>
+	{% for order in order_list.all %}
+	    {% for pizza in order.pizzas.all %}
+		<div class="pizza">
+		    <p class="item">
+		    <span class="size">
+			<strong>{{ pizza.size }} Pizza</strong>
+		    </span>
+		    <span class="price">
+			{{ pizza.base_price|stringformat:".2f" }}
+		    </span>
+		    </p>
+
+		    {% for topping in pizza.toppings.all %}
+			<p class="item">
+			<span class="topping">{{ topping }}</span>
+			<span class="price">
+			    {{ topping.base_price|stringformat:".2f" }}
+			</span>
+			</p>
+		    {% endfor %}
+		    <p class="crust">{{ pizza.crust.name }} Crust</p>
+		</div>
+	    {% endfor %}
+	    {% for bread in order.breads.all %}
+		<div class="bread">
+		    <p class="item">
+		    <span class="type">{{ bread.flavor.name }} Bread</span>
+		    <span class="price">
+			{{ bread.base_price|stringformat:".2f" }}
+		    </span>
+		    </p>
+		</div>
+	    {% endfor %}
+	    <p class="item">
+		<span class="total">Subtotal</span>
+		<span class="price">
+		    {{ order.subtotal|stringformat:".2f" }}
+		</span>
+	    </p>
+	    <p class="item">
+		<span class="total">Tax</span>
+		<span class="price">
+		    {{ order.tax|stringformat:".2f" }}
+		</span>
+	    </p>
+	    <p class="item">
+		<span class="total">Total</span>
+		<span class="price">
+		    {{ order.total|stringformat:".2f" }}
+		</span>
+	    </p>
+	{% endfor %}
+    {% endblock %}
+</div>
+
+<div id="menu">
+    <div id="categories">
+	{% block categories %}
+	    <h3>Menu</h3>
+	    <a href="/order/pizza/{{ order.id }}">Pizza</a>
+	    <a href="/order/bread/{{ order.id }}">Bread</a>
+	{% endblock %}
+    </div>
+
+    {% block menu %}
+    {% endblock %}
+</div>
+
+<script type="text/javascript" src="/site_media/jquery.js"></script>
+<script type="text/javascript" src="/site_media/base_order.js"></script>
+
+</body>
+</html>
